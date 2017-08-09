@@ -1,13 +1,15 @@
 # coding: utf-8
 
+import os
 import hashlib
 import json
 import requests
 from flask import Flask, request
 
 
-webhook_secret_key = '6d913186b7de89e12eeb'
-bot_url = 'https://hook.bearychat.com/=bw90f/incoming/3eb2aa1de9e5e6f2d57260e258e92ec6'
+BOT_URL = os.environ['BOT_URL']
+WEBHOOK_SECRET_KEY = os.environ['WEBHOOK_SECRET_KEY']
+
 
 app = Flask(__name__)
 
@@ -20,36 +22,42 @@ def index():
 @app.route('/webooks/', methods=['POST'])
 def wehbooks():
 
-    shop_domain = request.headers.get('X-HeyShop-Shop-Domain', '')
-    shop_name = request.headers.get('X-HeyShop-Shop', '')
-    event = request.headers.get('X-HeyShop-Event', '')
-    hmac_sha256 = request.headers.get('X-HeyShop-Hmac-Sha256', '')
+    try:
 
-    data = request.data
+        shop_domain = request.headers.get('X-HeyShop-Shop-Domain', '')
+        shop_name = request.headers.get('X-HeyShop-Shop', '')
+        event = request.headers.get('X-HeyShop-Event', '')
+        hmac_sha256 = request.headers.get('X-HeyShop-Hmac-Sha256', '')
 
-    show_text = """
-    X-HeyShop-Shop-Domain: %s,
-    X-HeyShop-Shop: %s,
-    X-HeyShop-Event: %s,
-    X-HeyShop-Hmac-Sha256: %s,
-    data: %s,
-    """ % (shop_domain, shop_name, event, hmac_sha256, data)
+        data = request.data
 
-    secret_str = data + webhook_secret_key
+        show_text = """
+        X-HeyShop-Shop-Domain: %s
+        X-HeyShop-Shop: %s
+        X-HeyShop-Event: %s
+        X-HeyShop-Hmac-Sha256: %s
+        data: %s
+        """ % (shop_domain, shop_name, event, hmac_sha256, data)
 
-    if hashlib.sha256(secret_str).hexdigest() == hmac_sha256:
+        secret_str = data + WEBHOOK_SECRET_KEY
 
-        requests.post(url=bot_url, json={'text': show_text + 'ok'})
+        if hashlib.sha256(secret_str).hexdigest() == hmac_sha256:
 
-        data = json.loads(data)
-        print data
+            requests.post(url=BOT_URL, json={'text': show_text + 'ok'})
 
-        return 'ok', 200
+            data = json.loads(data)
+            print data
 
-    else:
+            return 'ok', 200
 
-        requests.post(url=bot_url, json={'text': show_text + 'verify failed!'})
-        return 'verify failed', 400
+        else:
+
+            requests.post(url=BOT_URL, json={'text': show_text + 'verify failed!'})
+            return 'verify failed', 400
+
+    except Exception as e:
+        requests.post(url=BOT_URL, json={'text': 'error!!!\n%s' % e})
+        raise e
 
 
 if __name__ == '__main__':
