@@ -19,8 +19,8 @@ def index():
     return 'Hello world'
 
 
-@app.route('/webooks/', methods=['POST'])
-def wehbooks():
+@app.route('/webhooks/', methods=['POST'])
+def webhooks():
 
     try:
 
