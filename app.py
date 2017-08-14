@@ -43,12 +43,24 @@ def webhooks():
 
         if hashlib.sha256(secret_str).hexdigest() == hmac_sha256:
 
-            requests.post(url=BOT_URL, json={'text': show_text + 'ok'})
+            try:
+                data = json.loads(data)
+                data = data['data']
 
-            data = json.loads(data)
-            print data
+                show_text = """
+                Paid Success!
+                Order Number: %s
+                Title: %s
+                Customer: %s
+                Total Price: %s
+                """ % (data['order_number'], data['title'], data['customer']['mobile'], data['total_price'])
 
-            return 'ok', 200
+                requests.post(url=BOT_URL, json={'text': show_text + 'ok'})
+
+                return 'ok', 200
+            except Exception as e:
+                requests.post(url=BOT_URL, json={'text': show_text + 'error!\n' + str(e)})
+                return 'error', 500
 
         else:
 
