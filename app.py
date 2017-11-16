@@ -27,7 +27,7 @@ def webhooks():
         shop_domain = request.headers.get('X-HeyShop-Shop-Domain', '')
         shop_name = request.headers.get('X-HeyShop-Shop', '')
         event = request.headers.get('X-HeyShop-Event', '')
-        hmac_sha256 = request.headers.get('X-HeyShop-Hmac-Sha256', '')
+        hmac_sha256 = request.headers.get('X-HeyShop-Sha256', '')
 
         data = request.data
 
