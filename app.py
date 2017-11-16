@@ -35,7 +35,7 @@ def webhooks():
         X-HeyShop-Shop-Domain: %s
         X-HeyShop-Shop: %s
         X-HeyShop-Event: %s
-        X-HeyShop-Hmac-Sha256: %s
+        X-HeyShop-Sha256: %s
         data: %s
         """ % (shop_domain, shop_name, event, hmac_sha256, data)
 
