@@ -20,7 +20,7 @@ def index():
     open('./test.txt', 'w').write('gogogo')
     a = open('./test.txt').read()
     print a
-    return a
+    print os.getcwd()
     return 'Hello world'
 
 
