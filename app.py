@@ -16,6 +16,11 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
+    print '=============='
+    open('./test.txt', 'w').write('gogogo')
+    a = open('./test.txt').read()
+    print a
+    return a
     return 'Hello world'
 
 
